@@ -4,6 +4,7 @@ var flag = 0;
 var wizard;
 var touched = 0;
 var buttonsGrp;
+var wrongEradicator, hintGiver;
 
 //introduces game states
 var gameState = "START";
@@ -19,9 +20,6 @@ function setup(){
   cave.shapeColor = rgb(100,100,100);
 
   buttonsGrp = new Group();
-
-
-
 }
 
 function draw(){
@@ -35,7 +33,7 @@ function draw(){
     player.velocityX = 0;
   }
 
-  if(gameState === "START"){
+  if(gameState === "START" ){
     background("green");
     if(player.isTouching(cave)){
       flag = 1;
@@ -69,7 +67,7 @@ function draw(){
       text("That is not important. What is important is the fate of the world!",200,200);
     } else if (touched === 3){
       fill(0);
-      text("The world is in danger by a vicious beast! He is looking for sacred keys! If he gets a hold of the keys, he will wreak havoc on the world! You have been chosen by the gods to stop him by hiding the keys in plain sight! Centuries ago, the gods assigned guardians of the keys, who will give any them to any worthy one. The villain is smart, so you have to hurry up! You have to make the gods proud of you by answering this riddle!",200,200,200,100);
+      text("The world is in danger by a vicious beast! He is looking for sacred keys! If he gets a hold of the keys, he will wreak havoc on the world! You have been chosen by the gods to stop him by hiding the keys in plain sight! Centuries ago, the gods assigned guardians of the keys, who will give any them to any worthy one. The villain is smart, so you have to hurry up! You have to make the gods proud of you by answering this riddle!",200,200,300,300);
       
     }
 
@@ -101,7 +99,6 @@ function draw(){
         player.visible = true;
         buttonsGrp.destroyEach();
         touched = 5;
-        
       }
 
 
@@ -122,6 +119,8 @@ function draw(){
 
   if(gameState === "ADVENTURE"){
     background(225);
+    fill(0);
+    text("Press the right arrow to go ahead!",450,450);
   }
   
   
@@ -138,6 +137,37 @@ function draw(){
     text("Nothing",50,300);
     text("I don't know",50,390);
   }
+  if(touched === 5){
+    fill(0);
+    text("You are indeed worthy! I will give you two magical objects that will make it easier for you to answer the riddles!",200,200,200,200);
+    text("The red one you see can eradicate one wrong answer whereas the green one can give you a hint! But use wisely becasue your uses are limited!",200,300,300,300);
+
+    wrongEradicator = createSprite(50,100,50,50);
+    wrongEradicator.shapeColor = "red";
+
+    hintGiver = createSprite(100,100,50,50);
+    hintGiver.shapeColor = "green";
+    
+    player.scale = 1;
+    wizard.scale = 1;
+
+    player.x = 50;
+    player.y = 570;
+
+    wizard.x = 500;
+    wizard.y = 570;
+
+    player.velocityX = 2;
+
+    if(keyDown("RIGHT_ARROW")){
+      player.velocityX = 3;
+    }
+
+  }
+  
+
+  
+
  
 }
 
@@ -148,6 +178,5 @@ function mouseClicked(){
     touched = 3;
   } else if(touched === 3){
     touched = 4;
-  }
-  
+  } 
 }
