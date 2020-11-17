@@ -6,14 +6,41 @@ var touched = 0;
 var buttonsGrp;
 var wrongEradicator, hintGiver;
 
+var gender;
+
+var guardian1;
+
+//creates the images
+var boyImg, girlImg;
+var boyRunningImg, girlRunningImg;
+
 //introduces game states
 var gameState = "START";
 
+function preload(){
+  boyImg = loadImage("boy2.png");
+  girlImg = loadImage("Girl.png");
+
+  boyRunningImg = loadImage("boyRunningImg.png");
+  girlRunningImg = loadImage("GirlRunning.png");
+}
 function setup(){
   createCanvas(600,600);
   player = createSprite(50,570,10,10);
+  player.addImage("boyImg",boyImg);
+  player.addImage("girlImg",girlImg);
+  player.addImage("boyRunningImg",boyRunningImg);
+  player.addImage("GirlRunning.png",girlRunningImg);
   ground = createSprite(300,580,600,10);
+
   cave = createSprite(590,525,100,100);
+
+  guardian1 = createSprite(200,200,50,50);
+
+  player.visible = false;
+  ground.visible = false;
+  cave.visible = false;
+  guardian1.visible = false;
 
   player.shapeColor = "black";
   ground.shapeColor = "brown";
@@ -24,17 +51,31 @@ function setup(){
 
 function draw(){
   
-  
-  if(keyWentDown(RIGHT_ARROW)){
+
+  if(gameState !== "START" && keyWentDown(RIGHT_ARROW)){
     player.velocityX = 2;
+    if(gender === "m"){
+      player.changeImage("boyRunningImg",boyRunningImg);
+    } else if(gender === "f"){
+      player.changeImage("GirlRunning.png",girlRunningImg);
+    }
+    
   }
 
   if(keyWentUp(RIGHT_ARROW)){
     player.velocityX = 0;
   }
 
-  if(gameState === "START" ){
+  if(gameState === "START"){
+    background("purple");
+    chooseGender();
+  }
+
+  if(gameState === "PLAY" ){
     background("green");
+    player.visible = true;
+    ground.visible = true;
+    cave.visible = true;
     if(player.isTouching(cave)){
       flag = 1;
       player.x = 50;
@@ -121,6 +162,12 @@ function draw(){
     background(225);
     fill(0);
     text("Press the right arrow to go ahead!",450,450);
+    if(player.x >= 600){
+      guardian1.visible = true;
+      guardian1.x = 500;
+      guardian1.y = 570;
+      guardian1.shapeColor = "blue";
+    }
   }
   
   
@@ -153,6 +200,8 @@ function draw(){
 
     player.x = 50;
     player.y = 570;
+    
+    touched = 0;
 
     wizard.x = 500;
     wizard.y = 570;
@@ -179,4 +228,21 @@ function mouseClicked(){
   } else if(touched === 3){
     touched = 4;
   } 
+}
+
+function chooseGender(){
+  fill(0);
+  text("Press M for male and F for female",300,300);
+  image(boyImg,200,200,200,200);
+  image(girlImg,400,400,200,200);
+  if(keyDown("m")){
+    gameState = "PLAY";
+    gender = "m";
+  } 
+   if(keyDown("f")){
+    player.changeImage("girlImg",girlImg)
+    gameState = "PLAY";
+    gender = "f";
+  }
+
 }
