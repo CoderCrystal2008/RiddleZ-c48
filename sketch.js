@@ -13,29 +13,53 @@ var guardian1;
 //creates the images
 var boyImg, girlImg;
 var boyRunningImg, girlRunningImg;
+var bg1Img, eraserImg, hintImg;
+var caveImg;
+var wizardImg, guardian1Img;
 
 //introduces game states
 var gameState = "START";
 
-function preload(){
-  boyImg = loadImage("boy2.png");
-  girlImg = loadImage("Girl.png");
+//creates the background
+var bg;
 
-  boyRunningImg = loadImage("boyRunningImg.png");
-  girlRunningImg = loadImage("GirlRunning.png");
+//creates the image of the key
+var keyImg;
+
+function preload(){
+  boyImg = loadImage("images/boy2.png");
+  girlImg = loadImage("images/Girl.png");
+
+  boyRunningImg = loadAnimation("NewBoy/tile000.png","NewBoy/tile001.png","NewBoy/tile002.png");
+  girlRunningImg = loadAnimation("NewGirl/tile000.png","NewGirl/tile001.png","NewGirl/tile002.png");
+
+  bg1Img = loadImage("images/bg1.png");
+
+  eraserImg = loadImage("images/eraser.png");
+  hintImg = loadImage("images/hint.png");
+
+  caveImg = loadImage("images/cave.png");
+
+  wizardImg = loadImage("images/wizard.png");
+  guardian1Img = loadImage("images/guardian1.png");
+
+  keyImg = loadImage("images/key.png");
 }
 function setup(){
   createCanvas(600,600);
-  player = createSprite(50,570,10,10);
+  player = createSprite(50,520,10,10);
   player.addImage("boyImg",boyImg);
   player.addImage("girlImg",girlImg);
-  player.addImage("boyRunningImg",boyRunningImg);
-  player.addImage("GirlRunning.png",girlRunningImg);
+  player.addAnimation("boyRunningImg",boyRunningImg);
+  player.addAnimation("GirlRunningImg",girlRunningImg);
   ground = createSprite(300,580,600,10);
 
-  cave = createSprite(590,525,100,100);
+  cave = createSprite(580,465,100,100);
+  cave.addImage("caveImg",caveImg);
+  cave.scale = 0.75;
 
-  guardian1 = createSprite(200,200,50,50);
+  guardian1 = createSprite(200,200,10,10);
+  guardian1.addImage("guardian1Img",guardian1Img);
 
   player.visible = false;
   ground.visible = false;
@@ -46,23 +70,26 @@ function setup(){
   ground.shapeColor = "brown";
   cave.shapeColor = rgb(100,100,100);
 
+  bg = createSprite(300,300,600,600);
+  bg.visible = false;
+
   buttonsGrp = new Group();
 }
 
 function draw(){
-  
+  console.log(gameState);
 
   if(gameState !== "START" && keyWentDown(RIGHT_ARROW)){
     player.velocityX = 2;
     if(gender === "m"){
-      player.changeImage("boyRunningImg",boyRunningImg);
+      player.changeAnimation("boyRunningImg",boyRunningImg);
     } else if(gender === "f"){
-      player.changeImage("GirlRunning.png",girlRunningImg);
+      player.changeAnimation("GirlRunningImg",girlRunningImg);
     }
     
   }
 
-  if(keyWentUp(RIGHT_ARROW)){
+  if(keyWentUp("RIGHT_ARROW")){
     player.velocityX = 0;
   }
 
@@ -81,7 +108,8 @@ function draw(){
       player.x = 50;
       cave.destroy();
       wizard = createSprite(500,570,10,10);
-      wizard.shapeColor = "purple";
+      wizard.addImage("wizardImg",wizardImg);
+      wizard.scale = 0.2;
       gameState = "CAVE";
     }
   }
@@ -89,14 +117,16 @@ function draw(){
 
   if(gameState === "CAVE"){
     background(225);
+    console.log(gender);
     
     if(player.isTouching(wizard)){
-      player.scale = 5;
+      player.scale = 0.75;
       player.y = 300;
       touched = 1;
 
-      wizard.scale = 5;
+    
       wizard.y = 300;
+      text("Press the right arrow to go ahead!",450,450);
     }
 
     if(touched === 1){
@@ -141,37 +171,86 @@ function draw(){
         buttonsGrp.destroyEach();
         touched = 5;
       }
-
-
-
-    }
-
-    
-
-
-
-
-
-
-      
-    
-    
+    } 
   }
 
   if(gameState === "ADVENTURE"){
     background(225);
     fill(0);
-    text("Press the right arrow to go ahead!",450,450);
+
+      text("You are indeed worthy! I will give you two magical objects that will make it easier for you to answer the riddles!",200,200,200,200);
+      text("The eraser you see can eradicate one wrong answer whereas the exclamation coin   one can give you a hint! But use wisely becasue your uses are limited!",200,300,300,300);
+  
+      wrongEradicator = createSprite(50,100,50,50);
+      wrongEradicator.addImage("eraserImg",eraserImg);
+      wrongEradicator.scale = 0.2;
+  
+      hintGiver = createSprite(150,100,50,50);
+      hintGiver.addImage("hintImg",hintImg);
+      hintGiver.scale = 0.2;
+      
+      player.scale = 1;
+      wizard.scale = 0.2;
+  
+      
+      player.y = 520;
+  
+      
+      
+      touched = 0;
+  
+      wizard.x = 500;
+      wizard.y = 570;
+  
+      
+  
+      if(keyWentDown("RIGHT_ARROW")){
+        player.velocityX = 2;
+      }
+
+      if(keyWentUp("RIGHT_ARROW")){
+        player.velocityX = 0;
+      }
+  
     if(player.x >= 600){
+      player.x = 50;
+      wizard.destroy();
       guardian1.visible = true;
       guardian1.x = 500;
       guardian1.y = 570;
       guardian1.shapeColor = "blue";
+      gameState = "FIRST";
+      touched = 6;
+    } 
+  }
+
+  if(gameState === "FIRST"){
+    if(guardian1.visible === true){
+      background("pink");
+    }
+    if(player.isTouching(guardian1)){
+      player.visible = false;
+      guardian1.visible = false;
+
+      fill(0);
+      text("What is a dress that can't be worn?",300,250);
+    }
+    if(mousePressedOver(button)){
+      gameState = "ADVENTURE2";
+       buttonsGrp2.destroyEach();
+      player.visible = true;
+      guardian1.visible = true;
+      touched = 7;
+      
     }
   }
-  
-  
-  
+
+  if(gameState === "ADVENTURE2"){
+    fill(0);
+    text("You are worthy! Take this key and use it to save the world. Use it wisely.",300,300);
+    var key = createSprite(300,350,10,10);
+    key.addImage("keyImg",keyImg);
+  }
   drawSprites();
 
   if(flag === 0){
@@ -184,39 +263,33 @@ function draw(){
     text("Nothing",50,300);
     text("I don't know",50,390);
   }
-  if(touched === 5){
-    fill(0);
-    text("You are indeed worthy! I will give you two magical objects that will make it easier for you to answer the riddles!",200,200,200,200);
-    text("The red one you see can eradicate one wrong answer whereas the green one can give you a hint! But use wisely becasue your uses are limited!",200,300,300,300);
 
-    wrongEradicator = createSprite(50,100,50,50);
-    wrongEradicator.shapeColor = "red";
+  if(touched === 6){
+    text("Nothing",250,390);
+    text("Address",250,300);
+    text("I don't know",50,300);
+    text("A dress that can't be worn",50,390);
 
-    hintGiver = createSprite(100,100,50,50);
-    hintGiver.shapeColor = "green";
-    
-    player.scale = 1;
-    wizard.scale = 1;
+    var buttonsGrp2 = new Group();
 
-    player.x = 50;
-    player.y = 570;
-    
-    touched = 0;
+      var button = createSprite(300,300,100,50);
+      button.shapeColor = "red";
+      var button1 = createSprite(100,300,100,50);
+      button1.shapeColor = "green";
+      var button2 = createSprite(100,390,100,50);
+      button2.shapeColor = "blue";
+      var button3 = createSprite(300,390,100,50);
+      button3.shapeColor = "purple";
 
-    wizard.x = 500;
-    wizard.y = 570;
+      buttonsGrp2.add(button);
+      buttonsGrp2.add(button1);
+      buttonsGrp2.add(button2);
+      buttonsGrp2.add(button3);
 
-    player.velocityX = 2;
-
-    if(keyDown("RIGHT_ARROW")){
-      player.velocityX = 3;
-    }
-
-  }
-  
-
-  
-
+      if(mousePressedOver(wrongEradicator)){
+        button1.destroy();
+      }
+  } 
  
 }
 
